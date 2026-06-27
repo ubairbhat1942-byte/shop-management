@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Klinic | Tech Universe</title>
+    <style>
+        /* Modern Dark Theme Variables */
+        :root {
+            --bg-main: #0B0F19;
+            --bg-card: #151B2B;
+            --bg-card-hover: #1E293B;
+            --text-main: #FFFFFF;
+            --text-muted: #94A3B8;
+            --accent-blue: #3B82F6;
+            --accent-blue-hover: #2563EB;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --border-color: #2D3748;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navbar */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo { font-size: 1.25rem; font-weight: bold; display: flex; align-items: center; gap: 0.5rem; }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+        .btn-outline:hover { color: var(--text-main); border-color: var(--text-muted); }
+
+        /* Main Container */
+        .container { flex: 1; padding: 2rem; max-width: 1200px; margin: 0 auto; width: 100%; }
+        
+        /* Views */
+        .view { display: none; animation: fadeIn 0.4s ease; }
+        .view.active { display: block; }
+
+        /* --- LANDING PAGE --- */
+        .hero { text-align: center; padding: 3rem 0 2rem; }
+        
+        .location {
+            color: var(--warning);
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 { font-size: 3.5rem; font-weight: 800; line-height: 1.2; margin-bottom: 1.5rem; letter-spacing: -0.02em; }
+        .text-blue { color: var(--accent-blue); }
+        .hero p { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto 3rem; line-height: 1.6; }
+
+        .portal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .portal-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .portal-card:hover {
+            background: var(--bg-card-hover);
+            transform: translateY(-5px);
+            border-color: var(--accent-blue);
+        }
+
+        .portal-card .icon { font-size: 2.5rem; margin-bottom: 1.5rem; }
+        .portal-card h3 { font-size: 1.25rem; margin-bottom: 0.75rem; }
+        .portal-card p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; }
+        .portal-card .arrow { position: absolute; top: 1.5rem; right: 1.5rem; color: var(--text-muted); }
+
+        /* --- PORTAL UIs (Forms & Grids) --- */
+        .portal-header { margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
+        
+        .styled-form {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+            align-items: end;
+        }
+
+        .input-group { display: flex; flex-direction: column; gap: 0.5rem; }
+        .input-group label { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        
+        input, select {
+            padding: 0.75rem;
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        input:focus, select:focus { outline: none; border-color: var(--accent-blue); }
+
+        .btn-submit {
+            background: var(--accent-blue);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            height: 46px;
+        }
+        .btn-submit:hover { background: var(--accent-blue-hover); }
+
+        .inventory-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
+        .category-col { background: var(--bg-card); border-radius: 12px; padding: 1.5rem; border: 1px solid var(--border-color); }
+        .category-col h3 { color: var(--accent-blue); margin-bottom: 1rem; font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+        
+        .product-card {
+            background: var(--bg-main);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            border-left: 3px solid var(--accent-blue);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .card-brand { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
+        .card-title { font-weight: 600; font-size: 0.95rem; margin-top: 2px; }
+        .card-price { color: var(--success); font-weight: bold; }
+
+        /* Tracking Result Box */
+        .tracking-result {
+            background: var(--bg-card); padding: 2rem; border-radius: 12px; margin-top: 1.5rem; text-align: center; border: 1px solid var(--border-color); display: none;
+        }
+        .tracking-result.ready { border-color: var(--success); }
+        .tracking-result.progress { border-color: var(--warning); }
+        .whatsapp-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: #25D366; color: #111; padding: 0.5rem 1rem; border-radius: 50px; font-weight: bold; font-size: 0.9rem; margin-top: 1rem; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <span style="background: var(--accent-blue); color: white; padding: 4px 8px; border-radius: 6px; font-size: 1rem;">📱</span>
+            Mobile Klinic
+        </div>
+        <button class="btn-outline" onclick="navigate('landing')">← Home / Portals</button>
+    </header>
+
+    <div class="container">
+        <!-- 1. LANDING PAGE VIEW -->
+        <div id="view-landing" class="view active">
+            <div class="hero">
+                <div class="location">📍 KRALGUND, HANDWARA — TOWHEED BHAT</div>
+                <h1>Your Neighbourhood<br><span class="text-blue">Tech Universe</span></h1>
+                <p>Phones, accessories, repairs, smart gadgets — all under one roof. Choose your portal below.</p>
+            </div>
+            
+            <div class="portal-grid">
+                <div class="portal-card" onclick="navigate('shopkeeper')">
+                    <span class="arrow">→</span>
+                    <div class="icon">🛠️</div>
+                    <h3>Shopkeeper Portal</h3>
+                    <p>Manage inventory, custom brands, pricing, and repair jobs.</p>
+                </div>
+                <div class="portal-card" onclick="navigate('customer')">
+                    <span class="arrow">→</span>
+                    <div class="icon">🛍️</div>
+                    <h3>Customer Portal</h3>
+                    <p>Track your device repair and receive live WhatsApp notifications.</p>
+                </div>
+                <div class="portal-card" onclick="navigate('guest')">
+                    <span class="arrow">→</span>
+                    <div class="icon">🛒</div>
+                    <h3>Browse as Guest</h3>
+                    <p>Explore our current stock and prices instantly without logging in.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. SHOPKEEPER VIEW -->
+        <div id="view-shopkeeper" class="view">
+            <div class="portal-header">
+                <h2 style="color: var(--accent-blue);">🛠️ Shopkeeper Dashboard</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Manage stock and add custom brands.</p>
+            </div>
+
+            <form class="styled-form" id="inventoryForm">
+                <div class="input-group">
+                    <label>Model Name</label>
+                    <input type="text" id="itemName" placeholder="e.g., iPhone 15 Pro" required>
+                </div>
+                <div class="input-group">
+                    <label>Select Brand</label>
+                    <select id="itemBrand" required onchange="toggleCustomBrand()">
+                        <option value="" disabled selected>Choose Brand...</option>
+                        <optgroup label="Smartphones">
+                            <option value="Apple">Apple</option>
+                            <option value="Samsung">Samsung</option>
+                            <option value="Vivo">Vivo</option>
+                            <option value="Xiaomi">Xiaomi</option>
+                        </optgroup>
+                        <optgroup label="Audio/Electronics">
+                            <option value="boAt">boAt</option>
+                            <option value="Noise">Noise</option>
+                            <option value="Bajaj">Bajaj</option>
+                            <option value="Havells">Havells</option>
+                        </optgroup>
+                        <optgroup label="Custom">
+                            <option value="other" style="font-weight: bold; color: var(--accent-blue);">+ Other Company</option>
+                        </optgroup>
+                    </select>
+                </div>
+                
+                <!-- Hidden by default, shows when "Other" is selected -->
+                <div class="input-group" id="customBrandGroup" style="display: none;">
+                    <label>Enter Custom Brand</label>
+                    <input type="text" id="customBrandInput" placeholder="e.g. Lava, Nothing">
+                </div>
+
+                <div class="input-group">
+                    <label>Category</label>
+                    <select id="itemCat" required>
+                        <option value="phones">Mobile Phones</option>
+                        <option value="accessories">Accessories</option>
+                        <option value="electronics">Electronics</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Selling Price (₹)</label>
+                    <input type="number" id="itemPrice" placeholder="Enter amount" required>
+                </div>
+                <button type="submit" class="btn-submit">+ Add Stock</button>
+            </form>
+
+            <div class="inventory-layout">
+                <div class="category-col">
+                    <h3>📱 Phones</h3>
+                    <div id="grid-phones"></div>
+                </div>
+                <div class="category-col">
+                    <h3>⌚ Accessories</h3>
+                    <div id="grid-accessories"></div>
+                </div>
+                <div class="category-col">
+                    <h3>🔌 Electronics</h3>
+                    <div id="grid-electronics"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. CUSTOMER VIEW (Tracking) -->
+        <div id="view-customer" class="view">
+            <div class="portal-header">
+                <h2 style="color: var(--accent-blue);">🛍️ Customer Portal</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Track your device repair status.</p>
+            </div>
+
+            <div class="styled-form" style="max-width: 600px; margin: 0 auto;">
+                <div class="input-group" style="flex-grow: 1;">
+                    <label>Receipt Number</label>
+                    <input type="text" id="ticketId" placeholder="Enter your Receipt (e.g., 101)" required>
+                </div>
+                <button onclick="checkStatus()" class="btn-submit">Search</button>
+            </div>
+
+            <div id="repairResult" class="tracking-result">
+                <div id="statusIcon" style="font-size: 3rem; margin-bottom: 1rem;"></div>
+                <h2 id="statusTitle" style="margin-bottom: 0.5rem;"></h2>
+                <p id="statusDesc" style="color: var(--text-muted);"></p>
+                <div id="whatsappBadge" class="whatsapp-badge" style="display: none;">
+                    💬 WhatsApp Update Sent
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. GUEST VIEW (Read-Only Inventory) -->
+        <div id="view-guest" class="view">
+            <div class="portal-header">
+                <h2 style="color: var(--accent-blue);">🛒 Guest Inventory</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Browse our current stock and prices.</p>
+            </div>
+
+            <div class="inventory-layout">
+                <div class="category-col">
+                    <h3>📱 Phones</h3>
+                    <div id="guest-grid-phones"></div>
+                </div>
+                <div class="category-col">
+                    <h3>⌚ Accessories</h3>
+                    <div id="guest-grid-accessories"></div>
+                </div>
+                <div class="category-col">
+                    <h3>🔌 Electronics</h3>
+                    <div id="guest-grid-electronics"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Logic for smooth screen routing
+        function navigate(viewName) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(`view-${viewName}`).classList.add('active');
+        }
+
+        // Logic for showing/hiding the "Other" Custom Brand input field
+        function toggleCustomBrand() {
+            const brandSelect = document.getElementById('itemBrand');
+            const customGroup = document.getElementById('customBrandGroup');
+            const customInput = document.getElementById('customBrandInput');
+            
+            if (brandSelect.value === 'other') {
+                customGroup.style.display = 'flex';
+                customInput.required = true;
+            } else {
+                customGroup.style.display = 'none';
+                customInput.required = false;
+                customInput.value = ''; // clear it out
+            }
+        }
+
+        // Centralized function to add products to BOTH Shopkeeper and Guest views
+        function addProductToGrids(cat, brand, name, price) {
+            const formattedPrice = Number(price.replace(/,/g, '')).toLocaleString('en-IN');
+            const cardHTML = `
+                <div class="product-card">
+                    <div>
+                        <div class="card-brand">${brand}</div>
+                        <div class="card-title">${name}</div>
+                    </div>
+                    <div class="card-price">₹${formattedPrice}</div>
+                </div>
+            `;
+            // Add to shopkeeper view
+            document.getElementById(`grid-${cat}`).insertAdjacentHTML('afterbegin', cardHTML);
+            // Add to guest view
+            document.getElementById(`guest-grid-${cat}`).insertAdjacentHTML('afterbegin', cardHTML);
+        }
+
+        // Logic for submitting new inventory
+        document.getElementById('inventoryForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('itemName').value;
+            const cat = document.getElementById('itemCat').value;
+            const price = document.getElementById('itemPrice').value;
+            
+            // Check if standard brand or custom brand
+            let brand = document.getElementById('itemBrand').value;
+            if (brand === 'other') {
+                brand = document.getElementById('customBrandInput').value;
+            }
+
+            addProductToGrids(cat, brand, name, price);
+            
+            // Reset the form and hide custom input again
+            this.reset();
+            toggleCustomBrand();
+        });
+
+        // Logic for checking repair status
+        function checkStatus() {
+            const ticket = document.getElementById('ticketId').value.toUpperCase().replace('R-', '');
+            const box = document.getElementById('repairResult');
+            const icon = document.getElementById('statusIcon');
+            const title = document.getElementById('statusTitle');
+            const desc = document.getElementById('statusDesc');
+            const badge = document.getElementById('whatsappBadge');
+
+            box.className = 'tracking-result';
+            box.style.display = 'block';
+            badge.style.display = 'none';
+
+            if(ticket === '101') {
+                box.classList.add('progress');
+                icon.innerHTML = '⚙️';
+                title.innerHTML = 'Work in Progress';
+                title.style.color = 'var(--warning)';
+                desc.innerHTML = 'Parts have been ordered. We will WhatsApp you when it is ready.';
+            } else if (ticket !== '') {
+                box.classList.add('ready');
+                icon.innerHTML = '🎉';
+                title.innerHTML = 'Your Device is Ready!';
+                title.style.color = 'var(--success)';
+                desc.innerHTML = 'Our engineers have successfully repaired your device. You can pick it up today.';
+                badge.style.display = 'inline-flex';
+            }
+        }
+
+        // Load some dummy stock for visual reference into BOTH views
+        window.onload = () => {
+            addProductToGrids('phones', 'Samsung', 'Galaxy S24', '74999');
+            addProductToGrids('accessories', 'boAt', 'Airdopes 141', '1299');
+            addProductToGrids('electronics', 'Bajaj', 'Room Heater', '2499');
+        };
+    </script>
+</body>
+</html>
